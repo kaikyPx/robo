@@ -166,7 +166,10 @@ class App(ctk.CTk):
         self.export_frame.grid(row=0, column=0, sticky="ew", padx=20, pady=(15, 0))
         
         self.btn_export_xlsx = ctk.CTkButton(self.export_frame, text="📥 Exportar Excel (XLSX)", fg_color="#3b82f6", hover_color="#2563eb", font=ctk.CTkFont(weight="bold"), command=self.export_xlsx)
-        self.btn_export_xlsx.pack(side="left")
+        self.btn_export_xlsx.pack(side="left", padx=(0, 10))
+        
+        self.btn_export_pdf = ctk.CTkButton(self.export_frame, text="📄 Exportar PDF", fg_color="#ef4444", hover_color="#b91c1c", font=ctk.CTkFont(weight="bold"), command=self.export_pdf)
+        self.btn_export_pdf.pack(side="left")
         
         self.text_history = ctk.CTkTextbox(self.tab_hist, font=("Consolas", 14), fg_color="#0b0f19", border_width=1, border_color="#2b3548", corner_radius=10, text_color="#e2e8f0")
         self.text_history.grid(row=1, column=0, sticky="nsew", padx=20, pady=15)
@@ -215,6 +218,56 @@ class App(ctk.CTk):
                 self.update_ui("Exportado com sucesso!", 1.0)
             except Exception as e:
                 self.update_ui("Erro ao exportar.", 0.0)
+                
+    def export_pdf(self):
+        if not hasattr(self, 'last_sim_results') or not self.last_sim_results:
+            self.update_ui("Nenhum dado para exportar.", 0.0)
+            return
+            
+        file_path = filedialog.asksaveasfilename(
+            title="Salvar PDF",
+            defaultextension=".pdf",
+            filetypes=[("PDF", "*.pdf")]
+        )
+        if file_path:
+            try:
+                from reportlab.lib.pagesizes import letter, landscape
+                from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+                from reportlab.lib import colors
+                
+                doc = SimpleDocTemplate(file_path, pagesize=landscape(letter))
+                elements = []
+                
+                data = [["ID", "Gatilho", "Tipo", "Sorteado", "Res.", "Tentativa", "Lucro Fixo", "Lucro Mart."]]
+                for i, (s, f) in enumerate(zip(self.last_sim_results, self.last_fin_results)):
+                    data.append([
+                        str(i + 1),
+                        str(s['trigger_value']),
+                        str(s['trigger_type']),
+                        str(s['result_value']),
+                        "GREEN" if s['hit'] else "RED",
+                        str(s['hit_attempt']) if s['hit'] else "-",
+                        f"{f['fixed_profit']:.2f}",
+                        f"{f['martingale_profit']:.2f}"
+                    ])
+                    
+                table = Table(data)
+                table.setStyle(TableStyle([
+                    ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#1e2536")),
+                    ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                    ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                    ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                    ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                    ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor("#2b3548")),
+                    ('TEXTCOLOR', (0, 1), (-1, -1), colors.whitesmoke),
+                    ('GRID', (0, 0), (-1, -1), 1, colors.HexColor("#0b0f19"))
+                ]))
+                
+                elements.append(table)
+                doc.build(elements)
+                self.update_ui("PDF Exportado!", 1.0)
+            except Exception as e:
+                self.update_ui("Erro ao exportar PDF.", 0.0)
                 
     def run_backtest_thread(self):
         threading.Thread(target=self.run_backtest).start()
