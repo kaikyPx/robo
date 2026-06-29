@@ -159,10 +159,17 @@ class App(ctk.CTk):
         self.dash_text.grid(row=2, column=0, sticky="nsew", padx=20, pady=(0, 20))
         
         # --- TAB 3: HISTORICO ---
-        self.tab_hist.grid_rowconfigure(0, weight=1)
+        self.tab_hist.grid_rowconfigure(1, weight=1)
         self.tab_hist.grid_columnconfigure(0, weight=1)
+        
+        self.export_frame = ctk.CTkFrame(self.tab_hist, fg_color="transparent")
+        self.export_frame.grid(row=0, column=0, sticky="ew", padx=20, pady=(15, 0))
+        
+        self.btn_export_xlsx = ctk.CTkButton(self.export_frame, text="📥 Exportar Excel (XLSX)", fg_color="#3b82f6", hover_color="#2563eb", font=ctk.CTkFont(weight="bold"), command=self.export_xlsx)
+        self.btn_export_xlsx.pack(side="left")
+        
         self.text_history = ctk.CTkTextbox(self.tab_hist, font=("Consolas", 14), fg_color="#0b0f19", border_width=1, border_color="#2b3548", corner_radius=10, text_color="#e2e8f0")
-        self.text_history.grid(row=0, column=0, sticky="nsew", padx=20, pady=20)
+        self.text_history.grid(row=1, column=0, sticky="nsew", padx=20, pady=15)
         
         # Exibir tutorial ao iniciar
         self.after(500, self.show_tutorial)
@@ -178,6 +185,37 @@ class App(ctk.CTk):
             self.text_data.delete("1.0", "end")
             self.text_data.insert("1.0", f"Arquivo vinculado com sucesso:\n{file_path}\n\nPode iniciar o Backtest.")
 
+    def export_xlsx(self):
+        if not hasattr(self, 'last_sim_results') or not self.last_sim_results:
+            self.update_ui("Nenhum dado para exportar.", 0.0)
+            return
+            
+        file_path = filedialog.asksaveasfilename(
+            title="Salvar Resultados",
+            defaultextension=".xlsx",
+            filetypes=[("Excel", "*.xlsx")]
+        )
+        if file_path:
+            try:
+                import pandas as pd
+                data = []
+                for i, (s, f) in enumerate(zip(self.last_sim_results, self.last_fin_results)):
+                    data.append({
+                        "ID": i + 1,
+                        "Gatilho (Número)": s['trigger_value'],
+                        "Tipo do Gatilho": s['trigger_type'],
+                        "Resultado Sorteado": s['result_value'],
+                        "Green/Red": "GREEN" if s['hit'] else "RED",
+                        "Tentativa do Acerto": s['hit_attempt'] if s['hit'] else "-",
+                        "Lucro Fixo": f['fixed_profit'],
+                        "Lucro Martingale": f['martingale_profit']
+                    })
+                df = pd.DataFrame(data)
+                df.to_excel(file_path, index=False)
+                self.update_ui("Exportado com sucesso!", 1.0)
+            except Exception as e:
+                self.update_ui("Erro ao exportar.", 0.0)
+                
     def run_backtest_thread(self):
         threading.Thread(target=self.run_backtest).start()
 
@@ -217,6 +255,10 @@ class App(ctk.CTk):
             
             self.update_ui("Calculando indicadores financeiros...", 0.7)
             fin_results = calculate_financials(sim_results, bet_amount=1.0, payout_multiplier=36, target_count=len(target_numbers), martingale_multipliers=mart_multipliers)
+            
+            # Salva na memória para exportação
+            self.last_sim_results = sim_results
+            self.last_fin_results = fin_results
             
             self.update_ui("Renderizando Dashboard...", 0.9)
             stats = generate_statistics(sim_results, fin_results, len(numbers))
