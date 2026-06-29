@@ -233,12 +233,14 @@ class App(ctk.CTk):
             self.dash_text.insert("end", f"  • Conclusão: A estratégia obteve um {msg} ao utilizar Martingale.")
 
             # Populate History Tab
-            hist_out = " ID   | GATILHO | ÍNDICE | RESULTADO | TENTATIVA | LUCRO FIXO | LUCRO MART.\n"
-            hist_out += "-"*75 + "\n"
+            hist_out = " ID   | GATILHO (NÚMERO) | RESULTADO (NÚMERO) | TENTATIVA | LUCRO FIXO | LUCRO MART.\n"
+            hist_out += "-"*85 + "\n"
             for i, (s, f) in enumerate(zip(sim_results, fin_results)):
-                res_str = "GREEN" if s['hit'] else "RED  "
+                res_str = "GREEN" if s['hit'] else "RED"
                 att_str = str(s['hit_attempt']) if s['hit'] else "-"
-                hist_out += f" #{i+1:<4} | TIPO {s['trigger_type']}  | {s['trigger_index']:<6} | {res_str}     | {att_str:<9} | {f['fixed_profit']:<10.2f} | {f['martingale_profit']:.2f}\n"
+                gatilho_str = f"{s['trigger_value']} (Tipo {s['trigger_type']})"
+                result_str = f"{s['result_value']} ({res_str})"
+                hist_out += f" #{i+1:<4} | N. {gatilho_str:<13} | N. {result_str:<15} | {att_str:<9} | {f['fixed_profit']:<10.2f} | {f['martingale_profit']:.2f}\n"
             self.text_history.insert("end", hist_out)
             
             # Plot

@@ -9,11 +9,18 @@ def load_data(file_path=None, text_data=None):
     numbers = []
     
     if text_data:
-        for line in text_data.split('\n'):
-            line = line.strip()
-            if line.isdigit():
-                numbers.append(int(line))
-        return numbers
+        # Substitui vírgulas e quebras de linha por espaços
+        text_data = text_data.replace(',', ' ').replace('\n', ' ')
+        
+        # Divide por qualquer espaço
+        for item in text_data.split():
+            item = item.strip()
+            if item.isdigit():
+                numbers.append(int(item))
+                
+        # Inverte a lista para que o item lido primeiro (mais recente) fique no final
+        # garantindo que o bot processe do mais antigo para o mais novo
+        return numbers[::-1]
     
     if file_path and os.path.exists(file_path):
         if file_path.lower().endswith('.csv'):

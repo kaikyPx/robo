@@ -48,6 +48,8 @@ def run_simulation(numbers, target_numbers, max_attempts=4):
             results.append({
                 'trigger_type': trigger_type,
                 'trigger_index': trigger_end_index,
+                'trigger_value': numbers[trigger_end_index],
+                'result_value': drawn_number if attempts > 0 else "-",
                 'hit': hit,
                 'hit_attempt': hit_attempt if hit else 0,
                 'attempts_used': attempts
