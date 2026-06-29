@@ -120,28 +120,34 @@ class App(ctk.CTk):
         
         # KPI Frame
         self.kpi_frame = ctk.CTkFrame(self.tab_dash, fg_color="transparent")
-        self.kpi_frame.grid(row=0, column=0, sticky="ew", padx=10, pady=15)
-        for i in range(4):
+        self.kpi_frame.grid(row=0, column=0, sticky="ew", padx=10, pady=10)
+        for i in range(3):
             self.kpi_frame.grid_columnconfigure(i, weight=1)
             
         def create_card(parent, title, default_val):
             card = ctk.CTkFrame(parent, fg_color="#1e2536", corner_radius=12, border_width=1, border_color="#2b3548")
-            ctk.CTkLabel(card, text=title, font=ctk.CTkFont(size=14, weight="bold"), text_color="#94a3b8").pack(pady=(20, 5))
-            val_lbl = ctk.CTkLabel(card, text=default_val, font=ctk.CTkFont(size=32, weight="bold"), text_color="#e2e8f0")
-            val_lbl.pack(pady=(0, 20))
+            ctk.CTkLabel(card, text=title, font=ctk.CTkFont(size=13, weight="bold"), text_color="#94a3b8").pack(pady=(15, 2))
+            val_lbl = ctk.CTkLabel(card, text=default_val, font=ctk.CTkFont(size=28, weight="bold"), text_color="#e2e8f0")
+            val_lbl.pack(pady=(0, 15))
             return card, val_lbl
             
         card1, self.val_triggers = create_card(self.kpi_frame, "Gatilhos Identificados", "0")
-        card1.grid(row=0, column=0, padx=10, sticky="ew")
+        card1.grid(row=0, column=0, padx=8, pady=5, sticky="ew")
+        
+        card_hits, self.val_hits = create_card(self.kpi_frame, "Total Acertos", "0")
+        card_hits.grid(row=0, column=1, padx=8, pady=5, sticky="ew")
+        
+        card_misses, self.val_misses = create_card(self.kpi_frame, "Total Erros", "0")
+        card_misses.grid(row=0, column=2, padx=8, pady=5, sticky="ew")
         
         card2, self.val_winrate = create_card(self.kpi_frame, "Taxa de Assertividade", "0.0%")
-        card2.grid(row=0, column=1, padx=10, sticky="ew")
+        card2.grid(row=1, column=0, padx=8, pady=5, sticky="ew")
         
         card3, self.val_fixed = create_card(self.kpi_frame, "Balanço (Aposta Fixa)", "0.00")
-        card3.grid(row=0, column=2, padx=10, sticky="ew")
+        card3.grid(row=1, column=1, padx=8, pady=5, sticky="ew")
         
         card4, self.val_mart = create_card(self.kpi_frame, "Balanço (Martingale)", "0.00")
-        card4.grid(row=0, column=3, padx=10, sticky="ew")
+        card4.grid(row=1, column=2, padx=8, pady=5, sticky="ew")
         
         # Chart Frame
         self.chart_frame = ctk.CTkFrame(self.tab_dash, fg_color="#0b0f19", corner_radius=12, border_width=1, border_color="#2b3548")
@@ -217,6 +223,8 @@ class App(ctk.CTk):
             
             # Atualiza KPIs (Cards)
             self.val_triggers.configure(text=str(stats['total_triggers']))
+            self.val_hits.configure(text=str(stats['hits']), text_color="#10b981") # Verde
+            self.val_misses.configure(text=str(stats['losses']), text_color="#ef4444") # Vermelho
             self.val_winrate.configure(text=f"{stats['win_rate']:.1f}%")
             
             color_fixed = "#10b981" if stats['net_fixed_profit'] >= 0 else "#ef4444"
