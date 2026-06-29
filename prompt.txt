@@ -1,0 +1,315 @@
+ESPECIFICAÇÃO COMPLETA DO PROJETO
+
+Objetivo
+
+Desenvolver um software de backtest e análise estatística para analisar estratégias em sequências de resultados de roleta.
+
+Importante: O software não fará apostas reais nem qualquer integração com casas de apostas. O objetivo é exclusivamente analisar dados históricos e gerar estatísticas.
+
+⸻
+
+Entrada dos dados
+
+O sistema deve permitir importar:
+
+* Excel (.xlsx)
+* CSV
+* Lista de números colada manualmente
+
+Exemplo:
+
+13
+
+22
+
+5
+
+17
+
+12
+
+33
+
+…
+
+Os números devem ser analisados exatamente na ordem em que ocorreram.
+
+⸻
+
+Motor de Estratégias
+
+O sistema deverá ser desenvolvido de forma modular.
+
+Ou seja, a lógica da estratégia deve ficar separada da leitura dos dados e dos cálculos estatísticos.
+
+O objetivo é que, futuramente, seja possível criar novas estratégias sem precisar reescrever todo o software.
+
+⸻
+
+Estratégia Inicial
+
+Regra do Gatilho
+
+O sistema deverá identificar automaticamente dois tipos de gatilho.
+
+Gatilho 1
+
+Quando dois números consecutivos terminarem com o mesmo algarismo.
+
+Exemplo:
+
+13 → 33
+
+4 → 24
+
+22 → 32
+
+Após o segundo número o gatilho é acionado.
+
+⸻
+
+Gatilho 2
+
+Quando existir apenas um número entre dois números terminados com o mesmo algarismo.
+
+Exemplo:
+
+2 → 17 → 12
+
+5 → 30 → 20
+
+Após o segundo número o gatilho é acionado.
+
+⸻
+
+Números da Estratégia
+
+Quando um gatilho ocorrer, considerar os seguintes números:
+
+9
+
+22
+
+18
+
+31
+
+29
+
+16
+
+33
+
+1
+
+20
+
+24
+
+30
+
+11
+
+36
+
+8
+
+13
+
+Total: 15 números.
+
+⸻
+
+Simulação
+
+Após um gatilho:
+
+Verificar os próximos resultados.
+
+Primeira tentativa.
+
+Caso não acerte:
+
+Segunda tentativa.
+
+Caso não acerte:
+
+Terceira tentativa.
+
+Caso não acerte:
+
+Quarta tentativa.
+
+Caso não ocorra nenhum dos números até a quarta tentativa, registrar como perda.
+
+Após finalizar um gatilho, continuar normalmente procurando o próximo.
+
+⸻
+
+Sistema Parametrizável
+
+Gostaria que o programa permitisse alterar facilmente:
+
+* quantidade máxima de tentativas;
+* quantidade de vizinhos;
+* lista dos números apostados;
+* quantidade de números apostados;
+* valor apostado por número;
+* pagamento da aposta;
+* multiplicador do Martingale;
+* quantidade máxima de gales.
+
+Essas configurações devem ficar separadas da programação principal.
+
+Assim será possível testar novas ideias sem alterar o código.
+
+⸻
+
+Simulações Financeiras
+
+O sistema deverá possuir dois modos.
+
+Aposta fixa
+
+Mesmo valor em todas as tentativas.
+
+⸻
+
+Martingale
+
+Permitir configurar qualquer multiplicador.
+
+Exemplo:
+
+5
+
+10
+
+20
+
+40
+
+Ou
+
+5
+
+7,5
+
+11,25
+
+16,87
+
+O multiplicador deverá ser configurável.
+
+⸻
+
+Estatísticas
+
+Mostrar:
+
+Quantidade de resultados analisados.
+
+Quantidade de gatilhos encontrados.
+
+Quantidade de acertos na primeira tentativa.
+
+Quantidade de acertos na segunda.
+
+Quantidade de acertos na terceira.
+
+Quantidade de acertos na quarta.
+
+Quantidade de perdas.
+
+Percentual de acerto por tentativa.
+
+Taxa geral de acerto.
+
+⸻
+
+Estatísticas Financeiras
+
+Calcular automaticamente:
+
+Lucro bruto.
+
+Prejuízo bruto.
+
+Lucro líquido.
+
+Lucro médio por gatilho.
+
+Lucro médio por dia (caso seja informado um período).
+
+Resultado utilizando aposta fixa.
+
+Resultado utilizando Martingale.
+
+Maior sequência de vitórias.
+
+Maior sequência de derrotas.
+
+Maior drawdown.
+
+Expectativa matemática.
+
+ROI.
+
+Profit Factor.
+
+⸻
+
+Relatórios
+
+Gerar relatório contendo todas as estatísticas.
+
+Permitir exportar em:
+
+Excel.
+
+CSV.
+
+PDF.
+
+⸻
+
+Funcionalidade de Pesquisa (Muito Importante)
+
+Gostaria que o sistema permitisse criar facilmente novas estratégias no futuro.
+
+Por exemplo:
+
+* alterar os números da estratégia;
+* alterar o gatilho;
+* alterar quantidade de tentativas;
+* alterar quantidade de vizinhos;
+* testar outras regras.
+
+Sem precisar desenvolver outro software.
+
+⸻
+
+Interface
+
+Não preciso de uma interface sofisticada.
+
+Prefiro um sistema simples, funcional e organizado.
+
+O principal objetivo é velocidade, precisão e facilidade para realizar milhares de análises.
+
+⸻
+
+Código
+
+Gostaria que o código fosse limpo, organizado e documentado.
+
+A estrutura ideal seria separada em módulos:
+
+* Importação dos dados;
+* Estratégias;
+* Simulação;
+* Estatísticas;
+* Financeiro;
+* Relatórios.
+
+Assim ficará fácil adicionar novas funcionalidades futuramente.

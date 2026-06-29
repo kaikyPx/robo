@@ -1,0 +1,58 @@
+name: Build Executables
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch: # Permite rodar manualmente na aba Actions
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11' # Versão estável
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pyinstaller
+
+    - name: Build with PyInstaller (Mac)
+      if: matrix.os == 'macos-latest'
+      run: |
+        pyinstaller --noconfirm --onedir --windowed --name "RoboRoleta" main.py
+
+    - name: Build with PyInstaller (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        pyinstaller --noconfirm --onedir --windowed --name "RoboRoleta" main.py
+
+    - name: Zip Mac App
+      if: matrix.os == 'macos-latest'
+      run: |
+        cd dist
+        zip -r RoboRoleta-macOS.zip RoboRoleta.app/
+
+    - name: Upload Artifact (Mac)
+      if: matrix.os == 'macos-latest'
+      uses: actions/upload-artifact@v4
+      with:
+        name: RoboRoleta-macOS
+        path: dist/RoboRoleta-macOS.zip
+
+    - name: Upload Artifact (Windows)
+      if: matrix.os == 'windows-latest'
+      uses: actions/upload-artifact@v4
+      with:
+        name: RoboRoleta-Windows
+        path: dist/RoboRoleta/
