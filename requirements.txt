@@ -3,3 +3,4 @@ openpyxl
 customtkinter
 reportlab
 pyinstaller
+matplotlib
